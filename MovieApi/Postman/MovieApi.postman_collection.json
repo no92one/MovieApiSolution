@@ -1,0 +1,405 @@
+{
+  "info": {
+    "_postman_id": "5738f9c8-8e3a-43e9-811a-6b198646c8aa",
+    "name": "MovieApi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26911954"
+  },
+  "item": [
+    {
+      "name": "Base Request",
+      "item": [
+        {
+          "name": "Create movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"{{$randomFirstName}}\",\n    \"director\": \"{{$randomFullName}}\",\n    \"releaseYear\": 1970 \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all movies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get movie by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/1",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete movie by id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/41",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "41"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update all",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"{{$randomFirstName}}\",\n    \"director\": \"{{$randomFullName}}\",\n    \"releaseYear\": 1971\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/44",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "44"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update by cherry picking",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Changed by PATCH-Request\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/44",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "44"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Senario - Movie Lifecycle",
+      "item": [
+        {
+          "name": "01 - Get All Movies",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response is an array\", function () {\r\n    const data = pm.response.json();\r\n\r\n    pm.expect(data).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Every movie has required properties\", function () {\r\n    const movies = pm.response.json();\r\n\r\n    movies.forEach(movie => {\r\n        pm.expect(movie).to.have.property(\"id\");\r\n        pm.expect(movie).to.have.property(\"title\");\r\n        pm.expect(movie).to.have.property(\"director\");\r\n        pm.expect(movie).to.have.property(\"releaseYear\");\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02 - Create Test Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n\npm.test(\"Response contains created movie\", function () {\n    const movie = pm.response.json();\n\n    pm.expect(movie.title).to.eql(\"Postman Test Movie\");\n    pm.expect(movie.director).to.eql(\"Test Director\");\n    pm.expect(movie.releaseYear).to.eql(2020);\n    pm.expect(movie.id).to.be.a(\"number\");\n});\n\npm.test(\"Location header exists\", function () {\n    pm.expect(\n        pm.response.headers.has(\"Location\")\n    ).to.be.true;\n});\n\nif (pm.response.code === 201) {\n    const movie = pm.response.json();\n\n    if (Number.isInteger(movie.id) && movie.id > 0) {\n        pm.environment.set(\"movieId\", movie.id);\n    }\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Postman Test Movie\",\n    \"director\": \"Test Director\",\n    \"releaseYear\": 2020 \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 - Get Created Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Correct movie was returned\", function () {\n    const movie = pm.response.json();\n\n    const expectedId =\n        Number(pm.environment.get(\"movieId\"));\n\n    pm.expect(movie.id).to.eql(expectedId);\n    pm.expect(movie.title).to.eql(\"Postman Test Movie\");\n    pm.expect(movie.releaseYear).to.eql(2020);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/{{movieId}}",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04 - Update Created Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Movie was updated\", function () {\n    const movie = pm.response.json();\n\n    pm.expect(movie.title).to.eql(\"Updated Test Movie\");\n    pm.expect(movie.director).to.eql(\"Test Director\");\n    pm.expect(movie.releaseYear).to.eql(2021);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Test Movie\",\n    \"director\": \"Test Director\",\n    \"releaseYear\": 2021\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/{{movieId}}",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05 - Patch Created Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Only requested field was changed\", function () {\n    const movie = pm.response.json();\n\n    pm.expect(movie.releaseYear).to.eql(2022);\n\n    pm.expect(movie.title).to.eql(\"Updated Test Movie\");\n\n    pm.expect(movie.director).to.eql(\"Test Director\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"releaseYear\": 2022\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/{{movieId}}",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06 - Delete Created Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {\n    pm.response.to.have.status(204);\n});\n\npm.test(\"Response body is empty\", function () {\n    pm.expect(pm.response.text()).to.be.empty;\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/{{movieId}}",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 - Get Deleted Movie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deleted movie returns 404\", function () {\n    pm.response.to.have.status(404);\n});\n\npm.test(\"Error message is correct\", function () {\n    const data = pm.response.json();\n\n    pm.expect(data.message).to.eql(\"Movie not found.\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{Base_URL}}/api/movies/{{movieId}}",
+              "host": [
+                "{{Base_URL}}"
+              ],
+              "path": [
+                "api",
+                "movies",
+                "{{movieId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
